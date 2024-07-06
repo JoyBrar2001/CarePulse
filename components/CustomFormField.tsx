@@ -12,6 +12,10 @@ import { Input } from "@/components/ui/input";
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css"
+import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
+
 interface CustomProps {
   control: Control<any>;
   fieldType: FormFieldType;
@@ -28,7 +32,7 @@ interface CustomProps {
 }
 
 const RenderField = ({ field, props }: { field: any, props: CustomProps }) => {
-  const { control, fieldType, name, label, placeholder, iconSrc, iconAlt } = props;
+  const { control, fieldType, name, label, placeholder, iconSrc, iconAlt, dateFormat, showTimeSelect, renderSkeleton } = props;
 
   switch (props.fieldType) {
     case FormFieldType.INPUT:
@@ -66,6 +70,51 @@ const RenderField = ({ field, props }: { field: any, props: CustomProps }) => {
             onChange={field.onChange}
             className="input-phone"
           />
+        </FormControl>
+      );
+
+
+    case FormFieldType.DATE_PICKER:
+      return (
+        <div className="flex rounded-md border border-dark-500 bg-dark-400">
+          <Image
+            src="/assets/icons/calendar.svg"
+            height={24}
+            width={24}
+            alt="calendar"
+            className="ml-2"
+          />
+          <FormControl>
+            <DatePicker
+              selected={field.value}
+              onChange={(date) => field.onChange(date)}
+              dateFormat={dateFormat ?? 'MM/dd/yyyy'}
+              showTimeSelect={showTimeSelect ?? false}
+              timeInputLabel="Time:"
+              wrapperClassName="date-picker"
+            />
+          </FormControl>
+        </div>
+      )
+
+    case FormFieldType.SKELETON:
+      return (
+        renderSkeleton
+          ? renderSkeleton(field)
+          : null
+      );
+
+    case FormFieldType.SELECT:
+      return (
+        <FormControl>
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <SelectTrigger className="shad-select-trigger">
+              <SelectValue placeholder={props.placeholder} />
+            </SelectTrigger>
+            <SelectContent className="shad-select-content">
+              {props.children}
+            </SelectContent>
+          </Select>
         </FormControl>
       );
 
